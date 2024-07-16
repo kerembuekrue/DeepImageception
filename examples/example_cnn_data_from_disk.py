@@ -3,7 +3,7 @@ import pathlib
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from src.utils.utils import save_fig
-from src.model.cnn.cnn_tensorflow import CNN
+from src.model.convolutional_neural_network.cnn import CNN
 
 # EXPLORE DATA --------------
 
@@ -127,22 +127,18 @@ test_images_paths = list(no[:3]) + list(yes[:3])  # taking 3 images from each cl
 # Plot the selected test images and their predicted labels
 plt.figure(figsize=(8, 5))
 for i, img_path in enumerate(test_images_paths):
-
     # load image
     img = tf.keras.utils.load_img(img_path, target_size=(img_height, img_width))
     img_array = tf.keras.utils.img_to_array(img)
     img_array = tf.expand_dims(img_array, 0)  # Create a batch
-
     # predict label
     predictions = model.predict(img_array)
-
     # Determine the actual label from the file path
     actual_label = "1" if "/data/8863/1" in str(img_path) else "0"
-
+    # plot image
     plt.subplot(2, 3, i + 1)
     plt.imshow(img)
     plt.title(f"Label: {actual_label}, Prediction: {int(round(predictions[0][0]))}")
     plt.axis("off")
-
 plt.tight_layout()
 save_fig(["test_predictions"])
