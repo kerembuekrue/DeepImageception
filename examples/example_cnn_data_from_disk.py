@@ -58,10 +58,10 @@ print(len(class_names), class_names)
 # VISUALIZE DATA --------------
 
 # Plot the first nine images from the training dataset
-plt.figure(figsize=(7, 7))
+plt.figure(figsize=(8, 5))
 for images, labels in train_ds.take(1):
-    for i in range(9):
-        ax = plt.subplot(3, 3, i + 1)
+    for i in range(6):
+        ax = plt.subplot(2, 3, i + 1)
         plt.imshow(images[i].numpy().astype("uint8"))
         plt.title(class_names[labels[i]])
         plt.axis("off")
@@ -107,7 +107,7 @@ history = model.fit(
 # VISUALIZE TRAINING RESULTS --------------
 
 # accuracy
-plt.figure(figsize=(8, 4))
+plt.figure(figsize=(8, 5))
 plt.subplot(1, 2, 1)
 plt.plot(range(epochs), history.history['accuracy'], label='Training Accuracy')
 plt.plot(range(epochs), history.history['val_accuracy'], label='Validation Accuracy')
@@ -120,17 +120,30 @@ plt.legend(loc='upper right')
 # save as png
 save_fig(["accuracy_loss"])
 
-
 # PREDICT LABELS ON NEW DATA --------------
 
-img = tf.keras.utils.load_img(data_dir + "0", target_size=(img_height, img_width))
-img_array = tf.keras.utils.img_to_array(img)
-img_array = tf.expand_dims(img_array, 0)  # Create a batch
+# Select a few test images from the 'no' and 'yes' categories
+test_images_paths = list(no[:3]) + list(yes[:3])  # taking 3 images from each class for demonstration
 
-predictions = model.predict(img_array)
-score = tf.nn.softmax(predictions[0])
+# Plot the selected test images and their predicted labels
+plt.figure(figsize=(8, 5))
+for i, img_path in enumerate(test_images_paths):
 
-print(
-    "This image most likely belongs to {} with a {:.2f} percent confidence."
-    .format(class_names[np.argmax(score)], 100 * np.max(score))
-)
+    # load image
+    img = tf.keras.utils.load_img(img_path, target_size=(img_height, img_width))
+    img_array = tf.keras.utils.img_to_array(img)
+    img_array = tf.expand_dims(img_array, 0)  # Create a batch
+
+    # predict label
+    predictions = model.predict(img_array)
+
+    # Determine the actual label from the file path
+    actual_label = "1" if "/data/8863/1" in str(img_path) else "0"
+
+    plt.subplot(2, 3, i + 1)
+    plt.imshow(img)
+    plt.title(f"Label: {actual_label}, Prediction: {int(round(predictions[0][0]))}")
+    plt.axis("off")
+
+plt.tight_layout()
+save_fig(["test_predictions"])
