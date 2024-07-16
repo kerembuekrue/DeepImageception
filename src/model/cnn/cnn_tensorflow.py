@@ -7,18 +7,20 @@ IMG_WIDTH = 50
 class CNN(tf.keras.Model):
     def __init__(self):
         super(CNN, self).__init__()
-        self.conv1 = tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(IMG_HEIGHT, IMG_WIDTH, 3))
-        self.pool1 = tf.keras.layers.MaxPooling2D((2, 2))
-        self.conv2 = tf.keras.layers.Conv2D(64, (3, 3), activation='relu')
-        self.pool2 = tf.keras.layers.MaxPooling2D((2, 2))
-        self.conv3 = tf.keras.layers.Conv2D(128, (3, 3), activation='relu')
-        self.pool3 = tf.keras.layers.MaxPooling2D((2, 2))
+        self.scale = tf.keras.layers.Rescaling(1./255, input_shape=(IMG_HEIGHT, IMG_WIDTH, 3))  # [0, 255] ---> [0, 1]
+        self.conv1 = tf.keras.layers.Conv2D(16, 3, padding='same', activation='relu')
+        self.pool1 = tf.keras.layers.MaxPooling2D()
+        self.conv2 = tf.keras.layers.Conv2D(32, 3, padding='same', activation='relu')
+        self.pool2 = tf.keras.layers.MaxPooling2D()
+        self.conv3 = tf.keras.layers.Conv2D(64, 3, padding='same', activation='relu')
+        self.pool3 = tf.keras.layers.MaxPooling2D()
         self.flatten = tf.keras.layers.Flatten()
         self.fc1 = tf.keras.layers.Dense(128, activation='relu')
-        self.fc2 = tf.keras.layers.Dense(1, activation='sigmoid')  # Binary classification
+        self.fc2 = tf.keras.layers.Dense(1, activation='sigmoid')
 
     def call(self, inputs):
-        x = self.conv1(inputs)
+        x = self.scale(inputs)
+        x = self.conv1(x)
         x = self.pool1(x)
         x = self.conv2(x)
         x = self.pool2(x)
