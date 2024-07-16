@@ -7,12 +7,8 @@ import matplotlib.pyplot as plt
 # Normalize pixel values to be between 0 and 1
 train_images, test_images = train_images / 255.0, test_images / 255.0
 
-# Verify the data
-# To verify that the dataset looks correct, let's plot the first 25 images from the training set and display the class
-# name below each image:
-
-class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
-               'dog', 'frog', 'horse', 'ship', 'truck']
+# Verify the data, plot the first 25 images from the training set
+class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 
 plt.figure(figsize=(10, 10))
 for i in range(25):
@@ -33,10 +29,6 @@ model.add(layers.MaxPooling2D((2, 2)))
 model.add(layers.Conv2D(64, (3, 3), activation='relu'))
 model.add(layers.MaxPooling2D((2, 2)))
 model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-
-# Let's display the architecture of your model so far:
-model.summary()
-
 # Add Dense layers on top
 model.add(layers.Flatten())
 model.add(layers.Dense(64, activation='relu'))
