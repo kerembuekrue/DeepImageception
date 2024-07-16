@@ -1,8 +1,10 @@
-import matplotlib.pyplot as plt
-from src.model.cnn.cnn_tensorflow import CNN
-import pathlib
 import PIL
+import pathlib
+import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
+from src.utils.utils import save_fig
+from src.model.cnn.cnn_tensorflow import CNN
 
 # EXPLORE DATA --------------
 
@@ -51,7 +53,7 @@ val_ds = tf.keras.utils.image_dataset_from_directory(
 
 # Names of the two classes (0 and 1)
 class_names = train_ds.class_names
-# print(len(class_names), class_names)
+print(len(class_names), class_names)
 
 # VISUALIZE DATA --------------
 
@@ -64,12 +66,13 @@ for images, labels in train_ds.take(1):
         plt.title(class_names[labels[i]])
         plt.axis("off")
         plt.tight_layout()
+save_fig(["training_samples"])
 
 # print the dimensions of the first batch of the training dataset (number of images, pixels in x, pixels in y, RGB)
-# for image_batch, labels_batch in train_ds:
-#     print(image_batch.shape)
-#     print(labels_batch.shape)
-#     break
+for image_batch, labels_batch in train_ds:
+    print(image_batch.shape)
+    print(labels_batch.shape)
+    break
 
 
 # CONFIGURE DATA --------------
@@ -103,48 +106,31 @@ history = model.fit(
 
 # VISUALIZE TRAINING RESULTS --------------
 
-acc = history.history['accuracy']
-val_acc = history.history['val_accuracy']
-
-loss = history.history['loss']
-val_loss = history.history['val_loss']
-
-epochs_range = range(epochs)
-
+# accuracy
 plt.figure(figsize=(8, 4))
 plt.subplot(1, 2, 1)
-plt.plot(epochs_range, acc, label='Training Accuracy')
-plt.plot(epochs_range, val_acc, label='Validation Accuracy')
+plt.plot(range(epochs), history.history['accuracy'], label='Training Accuracy')
+plt.plot(range(epochs), history.history['val_accuracy'], label='Validation Accuracy')
 plt.legend(loc='lower right')
-
+# loss
 plt.subplot(1, 2, 2)
-plt.plot(epochs_range, loss, label='Training Loss')
-plt.plot(epochs_range, val_loss, label='Validation Loss')
+plt.plot(range(epochs), history.history['loss'], label='Training Loss')
+plt.plot(range(epochs), history.history['val_loss'], label='Validation Loss')
 plt.legend(loc='upper right')
+# save as png
+save_fig(["accuracy_loss"])
 
 
-# Evaluate the model
-loss, accuracy = model.evaluate(val_ds)
-print(f'Validation Accuracy: {accuracy:.4f}')
+# PREDICT LABELS ON NEW DATA --------------
 
-plt.show()
+img = tf.keras.utils.load_img(data_dir + "0", target_size=(img_height, img_width))
+img_array = tf.keras.utils.img_to_array(img)
+img_array = tf.expand_dims(img_array, 0)  # Create a batch
 
-#
-# # Visualize some predictions
-# def visualize_predictions(model, generator, num_images=10):
-#     x_batch, y_batch = next(generator)
-#     y_pred = model.predict(x_batch)
-#     y_pred_class = (y_pred > 0.5).astype("int32")
-#
-#     plt.figure(figsize=(15, 7))
-#     for i in range(num_images):
-#         plt.subplot(2, num_images // 2, i + 1)
-#         plt.imshow(x_batch[i])
-#         plt.title(f"True: {int(y_batch[i])}   Pred: {int(y_pred_class[i][0])}")
-#         plt.tight_layout()
-#         plt.axis('off')
-#     plt.show()
-#
-#
-# # Visualize predictions on a batch from the validation set
-# visualize_predictions(model, val_ds)
+predictions = model.predict(img_array)
+score = tf.nn.softmax(predictions[0])
+
+print(
+    "This image most likely belongs to {} with a {:.2f} percent confidence."
+    .format(class_names[np.argmax(score)], 100 * np.max(score))
+)
