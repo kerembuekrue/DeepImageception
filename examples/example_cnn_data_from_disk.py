@@ -1,6 +1,5 @@
 import PIL
 import pathlib
-import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from src.utils.utils import save_fig
