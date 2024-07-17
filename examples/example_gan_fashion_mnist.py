@@ -1,6 +1,7 @@
-import tensorflow_datasets as tfds
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+import tensorflow_datasets as tfds
+from src.model.generative_adversarial_network.gan import Generator, Discriminator
 
 # --- LOAD DATA ---------------------------------
 ds = tfds.load("fashion_mnist", split="train")
@@ -16,7 +17,7 @@ for i in range(3):
         axs[i, j].set_xticks([])
         axs[i, j].set_yticks([])
 plt.tight_layout()
-plt.show()
+# plt.show()
 
 
 # --- DATA PIPELINE -----------------------------
@@ -32,3 +33,17 @@ ds = ds.batch(128)  # Group dataset into batches of 128 samples (useful for effi
 ds = ds.prefetch(64)  # Prefetch next 64 batches while curr. batch is being processed (improve data pipeline efficiency)
 
 print(ds.as_numpy_iterator().next().shape)
+
+# --- MODEL -------------------------------------
+generator = Generator()
+generator.summary()
+
+# img = generator.predict(np.random.randn(4, 128, 1))
+img = generator.predict(np.random.randn(4, 128))
+fig, axs = plt.subplots(1, len(img), figsize=(7, 3))
+for i in range(len(img)):
+    axs[i].imshow(img[i])
+    axs[i].set_xticks([])
+    axs[i].set_yticks([])
+plt.tight_layout()
+plt.show()
