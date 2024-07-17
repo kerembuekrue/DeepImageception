@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow_datasets as tfds
@@ -5,6 +6,7 @@ from src.model.generative_adversarial_network.gan import Generator, Discriminato
 from src.utils.utils import save_fig
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.losses import BinaryCrossentropy
+from src.utils.utils import ModelMonitor
 
 
 # --- LOAD DATA ---------------------------------
@@ -76,3 +78,5 @@ gan = GAN(generator, discriminator)
 # compile GAN model
 gan.compile(g_opt, d_opt, g_loss, d_loss)
 
+# train GAN model
+hist = gan.fit(ds, epochs=20, callbacks=[ModelMonitor()])
