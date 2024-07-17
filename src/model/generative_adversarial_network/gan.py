@@ -21,7 +21,30 @@ class GAN(tf.keras.Model):
 
         # get data
         real_images = batch
-        fake_images = self.generator(tf.random.normal((6, 128, 1)))
+        fake_images = self.generator(tf.random.normal((128, 128, 1)), training=False)  # 128 random 128x1 tensors
+
+        # train discriminator
+        with tf.GradientTape() as d_tape:
+
+            # pass real and fake images to discriminator model
+            yhat_real = self.discriminator(real_images, training=True)
+            yhat_fake = self.discriminator(fake_images, training=True)
+            yhat_realfake = tf.concat([yhat_real, yhat_fake], axis=0)
+
+            # create labels (0: real, 1: fake)
+            y_realfake = tf.concat([tf.zeros_like(yhat_real), tf.ones_like(yhat_fake)], axis=0)
+
+            # add some noise to the outputs
+            noise_real = +0.15 * tf.random.uniform(tf.shape(yhat_real))
+            noise_fake = -0.15 * tf.random.uniform(tf.shape(yhat_fake))
+            y_realfake += tf.concat([noise_real, noise_fake], axis=0)
+
+            # compute loss
+            total_d_loss = self.d_loss(y_realfake, yhat_realfake)
+
+        # backpropagation
+        dgrad = d_tape.gradient(total_d_loss, self.discriminator.trainable_variables)
+        self.d_opt.apply_gradients(zip(dgrad, self.discriminator.trainable_variables))
 
 
 class Generator(tf.keras.Model):
