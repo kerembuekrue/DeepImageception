@@ -46,6 +46,25 @@ class GAN(tf.keras.Model):
         dgrad = d_tape.gradient(total_d_loss, self.discriminator.trainable_variables)
         self.d_opt.apply_gradients(zip(dgrad, self.discriminator.trainable_variables))
 
+        # train generator
+        with tf.GradientTape() as g_tape:
+
+            # generate some new images
+            gen_images = self.generator(tf.random.normal((128, 128, 1)), training=True)
+
+            # predict the labels of the generated images with the discriminator model
+            predicted_labels = self.discriminator(gen_images, training=False)
+
+            # compute loss (now 0: fake, since we are implying that the generated images are real images)
+            # trick: we want to confuse our discriminator using a Trojan Horse (our generated images)
+            total_g_loss = self.g_loss(tf.zeros_like(predicted_labels), predicted_labels)
+
+        # backpropagation
+        ggrad = g_tape.gradient(total_g_loss, self.discriminator.trainable_variables)
+        self.g_opt.apply_gradients(zip(ggrad, self.discriminator.trainable_variables))
+
+        return {"d_loss":total_d_loss, "g_loss":total_g_loss}
+
 
 class Generator(tf.keras.Model):
     def __init__(self):

@@ -70,6 +70,9 @@ d_opt = Adam(learning_rate=0.00001)  # discriminator shouldn't be too good at cl
 g_loss = BinaryCrossentropy()
 d_loss = BinaryCrossentropy()
 
+# create GAN model
 gan = GAN(generator, discriminator)
 
+# compile GAN model
 gan.compile(g_opt, d_opt, g_loss, d_loss)
+
