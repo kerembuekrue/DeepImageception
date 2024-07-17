@@ -7,7 +7,7 @@ from src.utils.utils import save_fig
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.losses import BinaryCrossentropy
 from src.utils.utils import ModelMonitor
-
+import tensorflow as tf
 
 # --- LOAD DATA ---------------------------------
 ds = tfds.load("fashion_mnist", split="train")
@@ -42,7 +42,7 @@ ds = ds.prefetch(64)  # Prefetch next 64 batches while curr. batch is being proc
 
 # --- GENERATOR ---------------------------------
 generator = Generator()
-generator.summary()
+# generator.summary()
 
 # generate some images
 img = generator.predict(np.random.randn(4, 128))  # 4 images
@@ -57,9 +57,9 @@ save_fig(["gan_samples_pre_training"])
 
 # --- DISCRIMINATOR -----------------------------
 discriminator = Discriminator()
-discriminator.summary()
+# discriminator.summary()
 predictions = discriminator.predict(img)
-print(predictions)
+# print(predictions)
 
 
 # --- TRAINING ----------------------------------
@@ -80,3 +80,35 @@ gan.compile(g_opt, d_opt, g_loss, d_loss)
 
 # train GAN model
 hist = gan.fit(ds, epochs=2, callbacks=[ModelMonitor()])
+
+plt.suptitle('Loss')
+plt.plot(hist.history['d_loss'], label='d_loss')
+plt.plot(hist.history['g_loss'], label='g_loss')
+plt.legend()
+plt.show()
+
+
+# save models
+generator.save('generator.h5')
+discriminator.save('discriminator.h5')
+
+# --- TESTING -----------------------------------
+
+# load weights
+generator.load_weights(os.path.join('archive', 'generatormodel.h5'))
+
+
+# generate images
+# imgs = generator.predict(tf.random.normal((16, 128, 1)))
+imgs = generator.predict(tf.random.normal((16, 128)))
+
+# plot images
+fig, ax = plt.subplots(ncols=4, nrows=4, figsize=(10,10))
+for r in range(4):
+    for c in range(4):
+        ax[r][c].imshow(imgs[(r+1)*(c+1)-1])
+
+#
+# # save data
+# generator.save('generator.h5')
+# discriminator.save('discriminator.h5')
