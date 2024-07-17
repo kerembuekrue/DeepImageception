@@ -1,8 +1,27 @@
 import tensorflow as tf
 from tensorflow.keras import layers as layers
 
-IMG_HEIGHT = 28
-IMG_WIDTH = 28
+
+class GAN(tf.keras.Model):
+    def __init__(self, generator, discriminator, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.generator = generator
+        self.discriminator = discriminator
+
+    def compile(self, g_opt, d_opt, g_loss, d_loss, *args, **kwargs):
+        super().compile(*args, **kwargs)
+
+        self.g_opt = g_opt
+        self.d_opt = d_opt
+        self.g_loss = g_loss
+        self.d_loss = d_loss
+
+    def train_step(self, batch):
+
+        # get data
+        real_images = batch
+        fake_images = self.generator(tf.random.normal((6, 128, 1)))
 
 
 class Generator(tf.keras.Model):
@@ -10,7 +29,6 @@ class Generator(tf.keras.Model):
         super(Generator, self).__init__()
 
         # reshapes random values to 7x7x128
-        # self.dense = layers.Dense(7*7*128, input_dim=128)
         self.dense = layers.Dense(7 * 7 * 128)
 
         self.relu1 = layers.LeakyReLU(0.2)
@@ -67,9 +85,6 @@ class Discriminator(tf.keras.Model):
 
         # Convolutioning pt. I
         self.conv1 = layers.Conv2D(32, 5, input_shape=(28, 28, 1))  # (28 x 28 x 1) ---> (24 x 24 x 32)
-        # self.conv1 = layers.Conv2D(32, 5, input_shape=(28, 28))  # (28 x 28 x 1) ---> (24 x 24 x 32)
-        # self.conv1 = layers.Conv2D(32, 5)  # (28 x 28 x 1) ---> (24 x 24 x 32)
-
         self.relu1 = layers.LeakyReLU(0.2)
         self.drop1 = layers.Dropout(0.4)
 

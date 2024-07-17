@@ -1,8 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow_datasets as tfds
-from src.model.generative_adversarial_network.gan import Generator, Discriminator
+from src.model.generative_adversarial_network.gan import Generator, Discriminator, GAN
 from src.utils.utils import save_fig
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.losses import BinaryCrossentropy
+
 
 # --- LOAD DATA ---------------------------------
 ds = tfds.load("fashion_mnist", split="train")
@@ -19,6 +22,7 @@ for i in range(3):
         axs[i, j].set_yticks([])
 plt.tight_layout()
 save_fig(["gan_training_samples"])
+
 
 # --- DATA PIPELINE -----------------------------
 def scale_images(data):
@@ -47,7 +51,7 @@ for i in range(len(img)):
     axs[i].set_yticks([])
 plt.tight_layout()
 save_fig(["gan_samples_pre_training"])
-# plt.show()
+
 
 # --- DISCRIMINATOR -----------------------------
 discriminator = Discriminator()
@@ -55,5 +59,17 @@ discriminator.summary()
 predictions = discriminator.predict(img)
 print(predictions)
 
+
 # --- TRAINING ----------------------------------
 
+# optimizers
+g_opt = Adam(learning_rate=0.0001)
+d_opt = Adam(learning_rate=0.00001)  # discriminator shouldn't be too good at classifying the fake images
+
+# loss functions
+g_loss = BinaryCrossentropy()
+d_loss = BinaryCrossentropy()
+
+gan = GAN(generator, discriminator)
+
+gan.compile(g_opt, d_opt, g_loss, d_loss)
