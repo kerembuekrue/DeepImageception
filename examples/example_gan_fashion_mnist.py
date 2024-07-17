@@ -32,18 +32,24 @@ ds = ds.shuffle(60000)  # Shuffle the dataset with a buffer size of 60000 to ens
 ds = ds.batch(128)  # Group dataset into batches of 128 samples (useful for efficient training and processing)
 ds = ds.prefetch(64)  # Prefetch next 64 batches while curr. batch is being processed (improve data pipeline efficiency)
 
-print(ds.as_numpy_iterator().next().shape)
+# print(ds.as_numpy_iterator().next().shape)  # batch shape
 
-# --- MODEL -------------------------------------
+# --- GENERATOR ---------------------------------
 generator = Generator()
 generator.summary()
 
-# img = generator.predict(np.random.randn(4, 128, 1))
-img = generator.predict(np.random.randn(4, 128))
+# create some images
+img = generator.predict(np.random.randn(4, 128))  # 4 images
 fig, axs = plt.subplots(1, len(img), figsize=(7, 3))
 for i in range(len(img)):
     axs[i].imshow(img[i])
     axs[i].set_xticks([])
     axs[i].set_yticks([])
 plt.tight_layout()
-plt.show()
+# plt.show()
+
+# --- DISCRIMINATOR -----------------------------
+discriminator = Discriminator()
+discriminator.summary()
+predictions = discriminator.predict(img)
+print(predictions)

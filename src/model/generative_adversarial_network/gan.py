@@ -38,7 +38,6 @@ class Generator(tf.keras.Model):
         self.conv5 = layers.Conv2D(1, 4, padding="same", activation="sigmoid")
 
     def call(self, inputs):
-
         x = self.dense(inputs)
         x = self.relu1(x)
         x = self.reshp(x)
@@ -65,8 +64,59 @@ class Generator(tf.keras.Model):
 class Discriminator(tf.keras.Model):
     def __init__(self):
         super(Discriminator, self).__init__()
-        self.data_aug1 = tf.keras.layers.RandomFlip("horizontal", input_shape=(IMG_HEIGHT, IMG_WIDTH, 3))
+
+        # Convolutioning pt. I
+        self.conv1 = layers.Conv2D(32, 5, input_shape=(28, 28, 1))  # (28 x 28 x 1) ---> (24 x 24 x 32)
+        # self.conv1 = layers.Conv2D(32, 5, input_shape=(28, 28))  # (28 x 28 x 1) ---> (24 x 24 x 32)
+        # self.conv1 = layers.Conv2D(32, 5)  # (28 x 28 x 1) ---> (24 x 24 x 32)
+
+        self.relu1 = layers.LeakyReLU(0.2)
+        self.drop1 = layers.Dropout(0.4)
+
+        # Convolutioning pt. II
+        self.conv2 = layers.Conv2D(64, 5)  # (24 x 24 x 32) ---> (20 x 20 x 64)
+        self.relu2 = layers.LeakyReLU(0.2)
+        self.drop2 = layers.Dropout(0.4)
+
+        # Convolutioning pt. III
+        self.conv3 = layers.Conv2D(128, 5)  # (20 x 20 x 64) ---> (16 x 16 x 128)
+        self.relu3 = layers.LeakyReLU(0.2)
+        self.drop3 = layers.Dropout(0.4)
+
+        # Convolutioning pt. IV
+        self.conv4 = layers.Conv2D(256, 5)  # (16 x 16 x 128) ---> (12 x 12 x 256)
+        self.relu4 = layers.LeakyReLU(0.2)
+        self.drop4 = layers.Dropout(0.4)
+
+        # Flattening
+        self.flatt = layers.Flatten()
+        self.drop5 = layers.Dropout(0.4)
+        self.dense = layers.Dense(1, activation="sigmoid")
 
     def call(self, inputs):
+        # Convolutioning pt. I
+        x = self.conv1(inputs)
+        x = self.relu1(x)
+        x = self.drop1(x)
 
-        return 0
+        # Convolutioning pt. II
+        x = self.conv2(x)
+        x = self.relu2(x)
+        x = self.drop2(x)
+
+        # Convolutioning pt. III
+        x = self.conv3(x)
+        x = self.relu3(x)
+        x = self.drop3(x)
+
+        # Convolutioning pt. IV
+        x = self.conv4(x)
+        x = self.relu4(x)
+        x = self.drop4(x)
+
+        # Flattening
+        x = self.flatt(x)
+        x = self.drop5(x)
+        x = self.dense(x)
+
+        return x
