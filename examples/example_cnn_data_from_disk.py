@@ -122,7 +122,7 @@ save_fig(["accuracy_loss"])
 # PREDICT LABELS ON NEW DATA --------------
 
 # Select a few test images from the 'no' and 'yes' categories
-test_images_paths = list(no[:3]) + list(yes[:3])  # taking 3 images from each class for demonstration
+test_images_paths = list(no[:30]) + list(yes[:30])  # taking 3 images from each class for demonstration
 
 # Plot the selected test images and their predicted labels
 plt.figure(figsize=(8, 5))
@@ -136,9 +136,10 @@ for i, img_path in enumerate(test_images_paths):
     # Determine the actual label from the file path
     actual_label = "1" if "/data/8863/1" in str(img_path) else "0"
     # plot image
-    plt.subplot(2, 3, i + 1)
+    plt.subplot(6, 10, i + 1)
     plt.imshow(img)
-    plt.title(f"Label: {actual_label}, Prediction: {int(round(predictions[0][0]))}")
+    # plt.title(f"Label: {actual_label}, Prediction: {int(round(predictions[0][0]))}")
+    plt.title(f"{actual_label}{int(round(predictions[0][0]))}")
     plt.axis("off")
 plt.tight_layout()
 save_fig(["test_predictions"])

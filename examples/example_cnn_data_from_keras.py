@@ -18,7 +18,7 @@ for i in range(18):
     plt.grid(False)
     plt.imshow(train_images[i])
     plt.xlabel(class_names[train_labels[i][0]])
-plt.tight_layout
+plt.tight_layout()
 plt.show()
 
 # Create the convolutional base
