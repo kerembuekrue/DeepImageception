@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow_datasets as tfds
 from src.model.generative_adversarial_network.gan import Generator, Discriminator
+from src.utils.utils import save_fig
 
 # --- LOAD DATA ---------------------------------
 ds = tfds.load("fashion_mnist", split="train")
@@ -17,8 +18,7 @@ for i in range(3):
         axs[i, j].set_xticks([])
         axs[i, j].set_yticks([])
 plt.tight_layout()
-# plt.show()
-
+save_fig(["gan_training_samples"])
 
 # --- DATA PIPELINE -----------------------------
 def scale_images(data):
@@ -38,7 +38,7 @@ ds = ds.prefetch(64)  # Prefetch next 64 batches while curr. batch is being proc
 generator = Generator()
 generator.summary()
 
-# create some images
+# generate some images
 img = generator.predict(np.random.randn(4, 128))  # 4 images
 fig, axs = plt.subplots(1, len(img), figsize=(7, 3))
 for i in range(len(img)):
@@ -46,6 +46,7 @@ for i in range(len(img)):
     axs[i].set_xticks([])
     axs[i].set_yticks([])
 plt.tight_layout()
+save_fig(["gan_samples_pre_training"])
 # plt.show()
 
 # --- DISCRIMINATOR -----------------------------
@@ -53,3 +54,6 @@ discriminator = Discriminator()
 discriminator.summary()
 predictions = discriminator.predict(img)
 print(predictions)
+
+# --- TRAINING ----------------------------------
+
