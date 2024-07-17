@@ -26,7 +26,7 @@ class CNN(tf.keras.Model):
         x = self.data_aug1(inputs)
         x = self.data_aug2(x)
         x = self.data_aug3(x)
-        x = self.scale(inputs)
+        x = self.scale(x)
         x = self.conv1(x)
         x = self.pool1(x)
         x = self.conv2(x)
