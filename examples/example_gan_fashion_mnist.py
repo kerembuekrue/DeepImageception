@@ -79,4 +79,4 @@ gan = GAN(generator, discriminator)
 gan.compile(g_opt, d_opt, g_loss, d_loss)
 
 # train GAN model
-hist = gan.fit(ds, epochs=20, callbacks=[ModelMonitor()])
+hist = gan.fit(ds, epochs=2, callbacks=[ModelMonitor()])

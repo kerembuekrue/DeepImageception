@@ -21,7 +21,8 @@ class GAN(tf.keras.Model):
 
         # get data
         real_images = batch
-        fake_images = self.generator(tf.random.normal((128, 128, 1)), training=False)  # 128 random 128x1 tensors
+        # fake_images = self.generator(tf.random.normal((128, 128, 1)), training=False)  # 128 random 128x1 tensors
+        fake_images = self.generator(tf.random.normal((128, 128)), training=False)  # 128 random 128x1 tensors
 
         # train discriminator
         with tf.GradientTape() as d_tape:
@@ -50,7 +51,8 @@ class GAN(tf.keras.Model):
         with tf.GradientTape() as g_tape:
 
             # generate some new images
-            gen_images = self.generator(tf.random.normal((128, 128, 1)), training=True)
+            # gen_images = self.generator(tf.random.normal((128, 128, 1)), training=True)
+            gen_images = self.generator(tf.random.normal((128, 128)), training=True)
 
             # predict the labels of the generated images with the discriminator model
             predicted_labels = self.discriminator(gen_images, training=False)
