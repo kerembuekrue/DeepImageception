@@ -79,7 +79,7 @@ gan = GAN(generator, discriminator)
 gan.compile(g_opt, d_opt, g_loss, d_loss)
 
 # train GAN model
-hist = gan.fit(ds, epochs=2, callbacks=[ModelMonitor()])
+hist = gan.fit(ds, epochs=1, callbacks=[ModelMonitor()])
 
 plt.suptitle('Loss')
 plt.plot(hist.history['d_loss'], label='d_loss')
